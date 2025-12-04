@@ -7,6 +7,9 @@
 .adk/
 .claude/
 
+# Implementation tracker
+retail_ai_location_strategy_adk/IMPLEMENTATION_TRACKER.md
+
 # Python
 __pycache__/
 *.py[cod]
