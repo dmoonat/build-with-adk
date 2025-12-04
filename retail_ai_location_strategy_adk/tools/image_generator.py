@@ -14,19 +14,30 @@
 
 """Gemini image generation tool for creating infographics.
 
-Uses Google AI Studio (API key) for authentication instead of Vertex AI.
+Uses Google AI Studio (API key) for authentication.
+Uses gemini-3-pro-image-preview model for image generation.
 Requires GOOGLE_API_KEY environment variable to be set.
+
+Saves the generated infographic directly as an artifact using tool_context.save_artifact()
+so it's accessible in adk web UI.
 """
 
 import base64
+import logging
 from google.adk.tools import ToolContext
+from google.genai import types
+
+logger = logging.getLogger("LocationStrategyPipeline")
 
 
-def generate_infographic(data_summary: str, tool_context: ToolContext) -> dict:
+async def generate_infographic(data_summary: str, tool_context: ToolContext) -> dict:
     """Generate an infographic image using Gemini's image generation capabilities.
 
     This tool creates a professional infographic visualizing the location
-    intelligence report data using Gemini's multimodal generation via AI Studio.
+    intelligence report data using Gemini 3 Pro Image model via AI Studio.
+
+    The generated image is automatically saved as an artifact named "infographic.png"
+    which can be viewed in the adk web UI.
 
     Args:
         data_summary: A concise summary of the location intelligence report
@@ -34,22 +45,21 @@ def generate_infographic(data_summary: str, tool_context: ToolContext) -> dict:
                      - Top location name and score
                      - Key metrics (competitors, market size)
                      - Main insights (3-5 bullet points)
+        tool_context: ADK ToolContext for saving artifacts and accessing state.
 
     Returns:
         dict: A dictionary containing:
             - status: "success" or "error"
             - message: Status message
-            - image_data: Base64 encoded image data (if successful)
-            - mime_type: MIME type of the image (if successful)
+            - artifact_saved: True if artifact was saved successfully
             - error_message: Error details (if failed)
     """
     try:
         from google import genai
-        from google.genai import types
 
         # Initialize Gemini client using AI Studio (not Vertex AI)
         # This uses GOOGLE_API_KEY from environment automatically
-        client = genai.Client(vertexai=False)
+        client = genai.Client()
 
         # Create the prompt for infographic generation
         prompt = f"""Generate a professional business infographic for a location intelligence report.
@@ -69,29 +79,56 @@ DESIGN REQUIREMENTS:
 Create an infographic that a business executive would use in a board presentation.
 """
 
-        # Generate the image
+        # Generate the image using Gemini 3 Pro Image model
         response = client.models.generate_content(
-            model="gemini-2.0-flash-exp",
+            model="gemini-3-pro-image-preview",
             contents=prompt,
             config=types.GenerateContentConfig(
-                response_modalities=["IMAGE", "TEXT"],
-                image_config=types.ImageConfig(aspect_ratio="16:9"),
+                response_modalities=["TEXT", "IMAGE"],
             ),
         )
 
         # Check for successful generation
-        if response.candidates and response.candidates[0].finish_reason.name == "STOP":
+        if response.candidates and len(response.candidates) > 0:
             for part in response.candidates[0].content.parts:
                 if hasattr(part, "inline_data") and part.inline_data:
                     image_bytes = part.inline_data.data
-                    mime_type = part.inline_data.mime_type
+                    mime_type = part.inline_data.mime_type or "image/png"
 
-                    return {
-                        "status": "success",
-                        "message": "Infographic generated successfully",
-                        "image_data": base64.b64encode(image_bytes).decode("utf-8"),
-                        "mime_type": mime_type,
-                    }
+                    # Save the image directly as an artifact using tool_context
+                    # This is the recommended ADK pattern for saving binary artifacts
+                    # Note: save_artifact is async, so we must await it
+                    try:
+                        image_artifact = types.Part.from_bytes(
+                            data=image_bytes,
+                            mime_type=mime_type
+                        )
+                        artifact_filename = "infographic.png"
+                        version = await tool_context.save_artifact(
+                            filename=artifact_filename,
+                            artifact=image_artifact
+                        )
+                        logger.info(f"Saved infographic artifact: {artifact_filename} (version {version})")
+
+                        return {
+                            "status": "success",
+                            "message": f"Infographic generated and saved as artifact '{artifact_filename}'",
+                            "artifact_saved": True,
+                            "artifact_filename": artifact_filename,
+                            "artifact_version": version,
+                            "mime_type": mime_type,
+                        }
+                    except Exception as save_error:
+                        logger.warning(f"Failed to save artifact: {save_error}")
+                        # Still return success with base64 data as fallback
+                        return {
+                            "status": "success",
+                            "message": "Infographic generated but artifact save failed",
+                            "artifact_saved": False,
+                            "image_data": base64.b64encode(image_bytes).decode("utf-8"),
+                            "mime_type": mime_type,
+                            "save_error": str(save_error),
+                        }
 
         # No image found in response
         return {
@@ -100,6 +137,7 @@ Create an infographic that a business executive would use in a board presentatio
         }
 
     except Exception as e:
+        logger.error(f"Failed to generate infographic: {e}")
         return {
             "status": "error",
             "error_message": f"Failed to generate infographic: {str(e)}",

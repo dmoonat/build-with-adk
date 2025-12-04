@@ -27,7 +27,39 @@ This package provides:
 
 Usage:
     adk web retail_ai_location_strategy_adk
+
+Environment Variables (set in .env file):
+    GOOGLE_API_KEY: Google AI Studio API key
+    GOOGLE_GENAI_USE_VERTEXAI: Set to FALSE for AI Studio
+    MAPS_API_KEY: Google Maps API key for Places search
 """
+
+from pathlib import Path
+
+# Auto-load .env file from the package directory
+def _load_dotenv():
+    """Load environment variables from .env file if it exists."""
+    try:
+        from dotenv import load_dotenv
+
+        # Look for .env in the package directory
+        package_dir = Path(__file__).parent
+        env_file = package_dir / ".env"
+
+        if env_file.exists():
+            load_dotenv(env_file)
+            return
+
+        # Also check parent directory (project root)
+        parent_env = package_dir.parent / ".env"
+        if parent_env.exists():
+            load_dotenv(parent_env)
+
+    except ImportError:
+        # dotenv not installed, skip
+        pass
+
+_load_dotenv()
 
 from .agent import root_agent, get_initial_state
 

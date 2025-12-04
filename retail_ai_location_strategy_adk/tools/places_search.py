@@ -14,6 +14,7 @@
 
 """Google Maps Places API search tool for competitor mapping."""
 
+import os
 from google.adk.tools import ToolContext
 
 
@@ -38,13 +39,13 @@ def search_places(query: str, tool_context: ToolContext) -> dict:
     try:
         import googlemaps
 
-        # Get API key from session state
-        maps_api_key = tool_context.state.get("maps_api_key", "")
+        # Get API key from session state first, then fall back to environment variable
+        maps_api_key = tool_context.state.get("maps_api_key", "") or os.environ.get("MAPS_API_KEY", "")
 
         if not maps_api_key:
             return {
                 "status": "error",
-                "error_message": "Maps API key not found in session state. Please set 'maps_api_key' in initial state.",
+                "error_message": "Maps API key not found. Set MAPS_API_KEY environment variable or 'maps_api_key' in session state.",
                 "results": [],
                 "count": 0,
             }

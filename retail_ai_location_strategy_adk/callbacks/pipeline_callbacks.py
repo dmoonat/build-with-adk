@@ -21,7 +21,6 @@ Location Strategy Pipeline. Callbacks handle:
 - Saving artifacts (JSON report, HTML report, infographic)
 """
 
-import base64
 import json
 import logging
 from datetime import datetime
@@ -218,30 +217,15 @@ def after_report_generator(callback_context: CallbackContext) -> Optional[types.
 
 
 def after_infographic_generator(callback_context: CallbackContext) -> Optional[types.Content]:
-    """Log completion and save infographic artifact."""
-    result = callback_context.state.get("infographic_result", {})
+    """Log completion of infographic generation.
 
-    if isinstance(result, dict) and result.get("status") == "success":
-        logger.info("STAGE 5: COMPLETE - Infographic generated successfully")
-
-        # Save image artifact
-        try:
-            image_data_b64 = result.get("image_data", "")
-            if image_data_b64:
-                image_bytes = base64.b64decode(image_data_b64)
-                mime_type = result.get("mime_type", "image/png")
-
-                image_artifact = types.Part.from_bytes(
-                    data=image_bytes,
-                    mime_type=mime_type
-                )
-                callback_context.save_artifact("infographic.png", image_artifact)
-                logger.info("  Saved artifact: infographic.png")
-        except Exception as e:
-            logger.warning(f"  Failed to save infographic artifact: {e}")
-    else:
-        error_msg = result.get("error_message", "Unknown error") if isinstance(result, dict) else "Invalid result"
-        logger.warning(f"STAGE 5: FAILED - {error_msg}")
+    Note: The artifact is now saved directly in the generate_infographic tool
+    using tool_context.save_artifact(). This callback just logs completion.
+    """
+    # The infographic_result from output_key contains the LLM's text response,
+    # not the tool's return dict. The artifact is saved directly in the tool.
+    logger.info("STAGE 5: COMPLETE - Infographic generation finished")
+    logger.info("  (Artifact saved directly by generate_infographic tool)")
 
     stages = callback_context.state.get("stages_completed", [])
     stages.append("infographic_generation")
