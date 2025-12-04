@@ -49,6 +49,9 @@ def before_market_research(callback_context: CallbackContext) -> Optional[types.
     logger.info(f"  Business Type: {callback_context.state.get('business_type', 'Not set')}")
     logger.info("=" * 60)
 
+    # Set current date for state injection in agent instruction
+    callback_context.state["current_date"] = datetime.now().strftime("%Y-%m-%d")
+
     # Initialize pipeline tracking
     callback_context.state["pipeline_stage"] = "market_research"
     callback_context.state["pipeline_start_time"] = datetime.now().isoformat()
@@ -64,6 +67,8 @@ def before_competitor_mapping(callback_context: CallbackContext) -> Optional[typ
     logger.info("  Using Google Maps Places API for real competitor data...")
     logger.info("=" * 60)
 
+    # Set current date for state injection in agent instruction
+    callback_context.state["current_date"] = datetime.now().strftime("%Y-%m-%d")
     callback_context.state["pipeline_stage"] = "competitor_mapping"
 
     return None
@@ -76,6 +81,8 @@ def before_gap_analysis(callback_context: CallbackContext) -> Optional[types.Con
     logger.info("  Executing Python code for quantitative market analysis...")
     logger.info("=" * 60)
 
+    # Set current date for state injection in agent instruction
+    callback_context.state["current_date"] = datetime.now().strftime("%Y-%m-%d")
     callback_context.state["pipeline_stage"] = "gap_analysis"
 
     return None
@@ -89,6 +96,8 @@ def before_strategy_advisor(callback_context: CallbackContext) -> Optional[types
     logger.info("  Generating structured LocationIntelligenceReport...")
     logger.info("=" * 60)
 
+    # Set current date for state injection in agent instruction
+    callback_context.state["current_date"] = datetime.now().strftime("%Y-%m-%d")
     callback_context.state["pipeline_stage"] = "strategy_synthesis"
 
     return None
@@ -101,6 +110,8 @@ def before_report_generator(callback_context: CallbackContext) -> Optional[types
     logger.info("  Generating McKinsey/BCG style HTML executive report...")
     logger.info("=" * 60)
 
+    # Set current date for state injection in agent instruction
+    callback_context.state["current_date"] = datetime.now().strftime("%Y-%m-%d")
     callback_context.state["pipeline_stage"] = "report_generation"
 
     return None
@@ -113,6 +124,8 @@ def before_infographic_generator(callback_context: CallbackContext) -> Optional[
     logger.info("  Calling Gemini image generation API...")
     logger.info("=" * 60)
 
+    # Set current date for state injection in agent instruction
+    callback_context.state["current_date"] = datetime.now().strftime("%Y-%m-%d")
     callback_context.state["pipeline_stage"] = "infographic_generation"
 
     return None

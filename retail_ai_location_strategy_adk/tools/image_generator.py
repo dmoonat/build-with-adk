@@ -99,6 +99,9 @@ Create an infographic that a business executive would use in a board presentatio
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     response_modalities=["TEXT", "IMAGE"],
+                    image_config=types.ImageConfig(
+                        aspect_ratio="16:9",
+                    ),
                 ),
             )
 

@@ -46,8 +46,6 @@ Usage:
     - maps_api_key: Google Maps API key for Places search
 """
 
-from datetime import datetime
-
 from google.adk.agents import SequentialAgent
 
 from .sub_agents import (
@@ -93,24 +91,3 @@ including JSON report, HTML report, and infographic image.
 )
 
 
-def get_initial_state(
-    target_location: str,
-    business_type: str,
-    maps_api_key: str = "",
-) -> dict:
-    """Create initial state for the pipeline.
-
-    Args:
-        target_location: The geographic area to analyze
-        business_type: The type of business to open
-        maps_api_key: Google Maps API key (optional, for Places search)
-
-    Returns:
-        dict: Initial state dictionary with all required variables
-    """
-    return {
-        "target_location": target_location,
-        "business_type": business_type,
-        "current_date": datetime.now().strftime("%Y-%m-%d"),
-        "maps_api_key": maps_api_key,
-    }

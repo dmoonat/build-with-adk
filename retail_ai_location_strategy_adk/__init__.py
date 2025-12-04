@@ -61,7 +61,7 @@ def _load_dotenv():
 
 _load_dotenv()
 
-from .agent import root_agent, get_initial_state
+from .agent import root_agent
 
-__all__ = ["root_agent", "get_initial_state"]
+__all__ = ["root_agent"]
 __version__ = "1.0.0"

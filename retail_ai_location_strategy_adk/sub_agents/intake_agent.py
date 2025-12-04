@@ -19,7 +19,6 @@ required parameters (target_location, business_type) into session state
 for use by subsequent agents in the pipeline.
 """
 
-from datetime import datetime
 from typing import Optional
 
 from google.adk.agents import LlmAgent
@@ -60,9 +59,7 @@ def after_intake(callback_context: CallbackContext) -> Optional[types.Content]:
         callback_context.state["business_type"] = parsed.business_type
         callback_context.state["additional_context"] = parsed.additional_context or ""
 
-    # Set current date
-    callback_context.state["current_date"] = datetime.now().strftime("%Y-%m-%d")
-
+    # Note: current_date is set in each agent's before_callback to ensure it's always available
     return None
 
 
