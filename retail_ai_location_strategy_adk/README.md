@@ -23,24 +23,28 @@ Given a location and business type, this pipeline automatically:
 ### Setup
 
 ```bash
-# 1. Navigate to agent folder for setup
+# 1. Clone the repository
+git clone https://github.com/anthropics/build-with-adk.git
+cd build-with-adk
+
+# 2. Navigate to agent folder for setup
 cd retail_ai_location_strategy_adk
 
-# 2. Create virtual environment
+# 3. Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# 3. Install dependencies
+# 4. Install dependencies
 pip install -r requirements.txt
 
-# 4. Configure API keys
+# 5. Configure API keys
 cp .env.example .env
 # Edit .env with your keys:
 #   GOOGLE_API_KEY=your_key
 #   GOOGLE_GENAI_USE_VERTEXAI=FALSE
 #   MAPS_API_KEY=your_maps_key
 
-# 5. Run from parent directory
+# 6. Run from parent directory
 cd ..
 adk web
 ```
@@ -94,7 +98,3 @@ For detailed documentation, see **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)**:
 ## Authors
 
 Based on the original [Retail AI Location Strategy notebook](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/use-cases/retail/retail_ai_location_strategy_gemini_3.ipynb) by [Lavi Nigam](https://github.com/lavinigam-gcp) and [Deepak Moonat](https://github.com/dmoonat).
-
-## License
-
-Apache 2.0 - See [LICENSE](https://www.apache.org/licenses/LICENSE-2.0)
