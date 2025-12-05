@@ -8,6 +8,7 @@ import { parseCodeBlocks, extractPythonCode } from "@/lib/parseCodeBlocks";
 
 interface TabbedGapAnalysisProps {
   content: string;
+  code?: string; // Separately extracted Python code from backend
 }
 
 type TabType = "results" | "code";
@@ -15,9 +16,9 @@ type TabType = "results" | "code";
 /**
  * Multi-tab interface for gap analysis showing both results and code.
  * - Results Tab: Rendered markdown output
- * - Code Tab: Syntax highlighted Python code
+ * - Code Tab: Syntax highlighted Python code (from separate state field or embedded in content)
  */
-export function TabbedGapAnalysis({ content }: TabbedGapAnalysisProps) {
+export function TabbedGapAnalysis({ content, code }: TabbedGapAnalysisProps) {
   const [activeTab, setActiveTab] = useState<TabType>("results");
 
   if (!content) {
@@ -25,8 +26,9 @@ export function TabbedGapAnalysis({ content }: TabbedGapAnalysisProps) {
   }
 
   const { textContent, codeBlocks } = parseCodeBlocks(content);
-  const pythonCode = extractPythonCode(content);
-  const hasCode = codeBlocks.length > 0;
+  // Prefer the separately extracted code from backend state, fallback to parsing content
+  const pythonCode = code || extractPythonCode(content);
+  const hasCode = !!pythonCode || codeBlocks.length > 0;
 
   return (
     <div className="space-y-2">

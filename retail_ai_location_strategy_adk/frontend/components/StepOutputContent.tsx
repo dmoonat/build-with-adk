@@ -53,7 +53,12 @@ export function StepOutputContent({ stepId, state }: StepOutputContentProps) {
       );
 
     case "gap_analysis":
-      return <TabbedGapAnalysis content={state.gap_analysis || ""} />;
+      return (
+        <TabbedGapAnalysis
+          content={state.gap_analysis || ""}
+          code={state.gap_analysis_code}
+        />
+      );
 
     case "strategy_synthesis":
       if (!state.strategic_report) {

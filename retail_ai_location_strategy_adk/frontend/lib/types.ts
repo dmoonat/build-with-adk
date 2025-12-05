@@ -137,6 +137,7 @@ export interface AgentState {
   market_research_findings?: string;
   competitor_analysis?: string;
   gap_analysis?: string;
+  gap_analysis_code?: string; // Extracted Python code from gap analysis
 
   // Final strategic report (set by StrategyAdvisorAgent)
   strategic_report?: LocationIntelligenceReport;
