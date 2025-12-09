@@ -225,6 +225,75 @@ class TestCompetitorMappingAgent:
 
 
 # =============================================================================
+# AudioOverviewAgent Tests - Requires Gemini TTS
+# =============================================================================
+
+
+@pytest.mark.integration
+class TestAudioOverviewAgent:
+    """Test AudioOverviewAgent in isolation.
+
+    AudioOverviewAgent generates a podcast-style audio summary using Gemini TTS.
+    It reads strategic_report from session state.
+
+    Note: Audio generation takes ~60-120 seconds depending on script length.
+    """
+
+    @pytest.mark.asyncio
+    @pytest.mark.timeout(180)
+    async def test_audio_overview_with_strategic_report(self):
+        """Test audio generation with pre-populated strategic report."""
+        import json
+
+        from app.sub_agents.audio_overview import audio_overview_agent
+
+        # Mock strategic report data (simplified for testing)
+        strategic_report = {
+            "target_location": "Indiranagar, Bangalore",
+            "business_type": "coffee shop",
+            "market_validation": "Proceed with confidence",
+            "total_competitors_found": 47,
+            "top_recommendation": {
+                "location_name": "Central Indiranagar",
+                "overall_score": 82,
+                "opportunity_type": "Premium positioning",
+            },
+            "key_insights": [
+                "High foot traffic area",
+                "Growing specialty coffee culture",
+                "Young professional demographic",
+            ],
+        }
+
+        result = await run_agent_test(
+            agent=audio_overview_agent,
+            query="Generate an audio overview of the analysis",
+            session_state={
+                "target_location": "Indiranagar, Bangalore",
+                "business_type": "coffee shop",
+                "strategic_report": json.dumps(strategic_report),
+            },
+        )
+
+        # Verify audio was generated - check for audio result in state
+        state = result["state"]
+
+        # The agent should produce audio_overview_result or store base64 audio
+        has_audio_result = "audio_overview_result" in state
+        has_audio_base64 = "audio_overview_base64" in state
+
+        assert (
+            has_audio_result or has_audio_base64
+        ), f"Expected audio output in state. Got keys: {list(state.keys())}"
+
+        # If audio_overview_result exists, verify it has expected structure
+        if has_audio_result:
+            audio_result = state["audio_overview_result"]
+            if isinstance(audio_result, dict):
+                assert audio_result.get("status") == "success", f"Audio generation failed: {audio_result}"
+
+
+# =============================================================================
 # Agent Module Import Tests - No API calls, fast
 # =============================================================================
 
@@ -244,6 +313,8 @@ class TestAgentModuleImport:
 
     def test_sub_agents_import(self):
         """Test that all sub-agents can be imported."""
+        from app.sub_agents.artifact_generation import artifact_generation_pipeline
+        from app.sub_agents.audio_overview import audio_overview_agent
         from app.sub_agents.competitor_mapping import competitor_mapping_agent
         from app.sub_agents.gap_analysis import gap_analysis_agent
         from app.sub_agents.infographic_generator import infographic_generator_agent
@@ -260,6 +331,8 @@ class TestAgentModuleImport:
             strategy_advisor_agent,
             report_generator_agent,
             infographic_generator_agent,
+            audio_overview_agent,
+            artifact_generation_pipeline,
         ]
 
         for agent in agents:
@@ -268,11 +341,12 @@ class TestAgentModuleImport:
 
     def test_tools_import(self):
         """Test that all custom tools can be imported."""
+        from app.tools.audio_generator import generate_audio_overview
         from app.tools.html_report_generator import generate_html_report
         from app.tools.image_generator import generate_infographic
         from app.tools.places_search import search_places
 
-        tools = [search_places, generate_html_report, generate_infographic]
+        tools = [search_places, generate_html_report, generate_infographic, generate_audio_overview]
 
         for tool in tools:
             assert callable(tool)

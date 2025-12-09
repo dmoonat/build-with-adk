@@ -22,6 +22,7 @@ from .pipeline_callbacks import (
     before_strategy_advisor,
     before_report_generator,
     before_infographic_generator,
+    before_audio_overview,
     # After callbacks
     after_market_research,
     after_competitor_mapping,
@@ -29,6 +30,7 @@ from .pipeline_callbacks import (
     after_strategy_advisor,
     after_report_generator,
     after_infographic_generator,
+    after_audio_overview,
 )
 
 __all__ = [
@@ -38,10 +40,12 @@ __all__ = [
     "before_strategy_advisor",
     "before_report_generator",
     "before_infographic_generator",
+    "before_audio_overview",
     "after_market_research",
     "after_competitor_mapping",
     "after_gap_analysis",
     "after_strategy_advisor",
     "after_report_generator",
     "after_infographic_generator",
+    "after_audio_overview",
 ]

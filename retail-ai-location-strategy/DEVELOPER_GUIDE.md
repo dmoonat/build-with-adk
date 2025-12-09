@@ -41,7 +41,9 @@ An AI pipeline that unifies these disparate data sources into a coherent strateg
 
 ## Features
 
-- **7 Specialized Agents**: Each agent focuses on a specific task in the analysis pipeline
+- **8 Specialized Agents**: Each agent focuses on a specific task in the analysis pipeline
+- **Parallel Artifact Generation**: HTML report, infographic, and audio generated concurrently using ParallelAgent
+- **Audio Overview**: Podcast-style TTS audio using Gemini 2.5 Flash Preview TTS (multi-speaker in AI Studio, single-speaker in Vertex AI)
 - **Real-time Web Search**: MarketResearchAgent uses Google Search for live market data
 - **Google Maps Integration**: CompetitorMappingAgent uses Places API for real competitor data
 - **Python Code Execution**: GapAnalysisAgent runs pandas code for quantitative analysis
@@ -71,10 +73,14 @@ flowchart TB
         A2["CompetitorMappingAgent<br/>Google Maps Places API"]
         A3["GapAnalysisAgent<br/>Python Code Execution"]
         A4["StrategyAdvisorAgent<br/>Extended Reasoning + Pydantic Schema"]
-        A5["ReportGeneratorAgent<br/>HTML Report Tool"]
-        A6["InfographicGeneratorAgent<br/>Gemini Image Generation"]
 
-        A0 --> A1 --> A2 --> A3 --> A4 --> A5 --> A6
+        subgraph Parallel["ArtifactGenerationPipeline (ParallelAgent)"]
+            A5["ReportGeneratorAgent<br/>HTML Report Tool"]
+            A6["InfographicGeneratorAgent<br/>Gemini Image Generation"]
+            A7["AudioOverviewAgent<br/>Gemini TTS"]
+        end
+
+        A0 --> A1 --> A2 --> A3 --> A4 --> Parallel
     end
 
     subgraph State["Session State"]
@@ -90,12 +96,14 @@ flowchart TB
         O1["intelligence_report.json"]
         O2["executive_report.html"]
         O3["infographic.png"]
+        O4["audio_overview.wav"]
     end
 
     U --> A0
     A4 -.-> O1
     A5 -.-> O2
     A6 -.-> O3
+    A7 -.-> O4
 ```
 
 ### State Flow
@@ -109,8 +117,10 @@ User Input
     → CompetitorMappingAgent produces: competitor_analysis
     → GapAnalysisAgent produces: gap_analysis
     → StrategyAdvisorAgent produces: strategic_report (Pydantic model)
-    → ReportGeneratorAgent produces: html_report
-    → InfographicGeneratorAgent produces: infographic_result
+    → ArtifactGenerationPipeline (ParallelAgent) produces:
+        → ReportGeneratorAgent: html_report
+        → InfographicGeneratorAgent: infographic_result
+        → AudioOverviewAgent: audio_overview_result
 ```
 
 ### Agent Communication Pattern
@@ -148,21 +158,24 @@ retail-ai-location-strategy/
 │   ├── config.py            # Model and retry configuration
 │   ├── .env                 # Environment variables (from .env.example)
 │   │
-│   ├── sub_agents/          # 7 specialized agents
+│   ├── sub_agents/          # 8 specialized agents
 │   │   ├── __init__.py
-│   │   ├── intake_agent.py      # Parses user request
-│   │   ├── market_research.py   # Web search for market data
-│   │   ├── competitor_mapping.py # Maps API for competitors
-│   │   ├── gap_analysis.py      # Python code execution
-│   │   ├── strategy_advisor.py  # Extended reasoning + structured output
-│   │   ├── report_generator.py  # HTML report generation
-│   │   └── infographic_generator.py # Image generation
+│   │   ├── intake_agent/        # Parses user request
+│   │   ├── market_research/     # Web search for market data
+│   │   ├── competitor_mapping/  # Maps API for competitors
+│   │   ├── gap_analysis/        # Python code execution
+│   │   ├── strategy_advisor/    # Extended reasoning + structured output
+│   │   ├── artifact_generation/ # ParallelAgent for artifact generation
+│   │   ├── report_generator/    # HTML report generation
+│   │   ├── infographic_generator/ # Image generation
+│   │   └── audio_overview/      # Gemini TTS audio generation
 │   │
 │   ├── tools/               # Custom function tools
 │   │   ├── __init__.py
 │   │   ├── places_search.py     # Google Maps Places API wrapper
 │   │   ├── html_report_generator.py # HTML generation tool
-│   │   └── image_generator.py   # Gemini image generation tool
+│   │   ├── image_generator.py   # Gemini image generation tool
+│   │   └── audio_generator.py   # Gemini TTS audio generation tool
 │   │
 │   ├── callbacks/           # Pipeline lifecycle callbacks
 │   │   ├── __init__.py
@@ -195,6 +208,7 @@ retail-ai-location-strategy/
 | **StrategyAdvisorAgent** | Strategic synthesis | PRO_MODEL | Extended reasoning + Pydantic `output_schema` | `strategic_report` |
 | **ReportGeneratorAgent** | HTML report | FAST_MODEL | `generate_html_report` tool | `html_report` |
 | **InfographicGeneratorAgent** | Visual summary | FAST_MODEL | `generate_infographic` tool | `infographic_result` |
+| **AudioOverviewAgent** | Podcast audio | FAST_MODEL | `generate_audio_overview` tool with Gemini TTS | `audio_overview_result` |
 
 ### Tools
 
@@ -235,6 +249,31 @@ async def generate_infographic(data_summary: str, tool_context: ToolContext) -> 
     """Generate infographic using Gemini's native image generation."""
     # Uses IMAGE_MODEL (gemini-3-pro-image-preview) with response_modalities=["TEXT", "IMAGE"]
 ```
+
+#### generate_audio_overview
+
+Creates podcast-style audio summaries using Gemini TTS (`gemini-2.5-flash-preview-tts`).
+
+```python
+async def generate_audio_overview(podcast_script: str, tool_context: ToolContext) -> dict:
+    """Generate audio using Gemini TTS.
+
+    - AI Studio: Multi-speaker (Host A + Host B) dialogue using multi_speaker_voice_config
+    - Vertex AI: Single-speaker narrative (Kore voice) using voice_config
+
+    The audio is wrapped in proper WAV headers and saved as artifact.
+
+    Returns:
+        dict with status, artifact_filename, duration_estimate, size_bytes
+    """
+```
+
+**TTS Configuration:**
+
+| Mode | Voices | Multi-speaker Support |
+|------|--------|----------------------|
+| AI Studio | Kore (Host A) + Puck (Host B) | Yes - `multi_speaker_voice_config` |
+| Vertex AI | Kore only | No - uses `voice_config` fallback |
 
 ### Callbacks
 
@@ -333,6 +372,22 @@ RETRY_ATTEMPTS = 5        # number of retries
 RETRY_MAX_DELAY = 60      # maximum delay between retries
 ```
 
+### TTS Configuration
+
+The AudioOverviewAgent uses Gemini TTS for podcast-style audio generation:
+
+```python
+# config.py
+TTS_MODEL = "gemini-2.5-flash-preview-tts"
+```
+
+| Auth Mode | Feature | Notes |
+|-----------|---------|-------|
+| AI Studio | Multi-speaker | Two hosts (Kore + Puck) in dialogue format |
+| Vertex AI | Single-speaker | Single narrator (Kore) - `multi_speaker_voice_config` not supported |
+
+The audio is generated as 24kHz 16-bit mono PCM and wrapped in WAV headers for compatibility with media players and browsers.
+
 ---
 
 ## Sample Outputs
@@ -347,6 +402,9 @@ Professional 7-slide HTML presentation suitable for executive presentations.
 
 ### 3. infographic.png
 Visual summary infographic generated by Gemini 3 Pro Image Preview.
+
+### 4. audio_overview.wav
+Podcast-style audio summary (~2-3 minutes). Uses multi-speaker dialogue in AI Studio mode (Kore + Puck voices) or single narrator in Vertex AI mode (Kore voice only).
 
 ---
 

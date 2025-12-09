@@ -115,11 +115,13 @@ def before_strategy_advisor(callback_context: CallbackContext) -> Optional[types
 
 
 def before_report_generator(callback_context: CallbackContext) -> Optional[types.Content]:
-    """Log start of report generation phase."""
+    """Log start of report generation phase (runs in parallel with infographic and audio)."""
     logger.info("=" * 60)
-    logger.info("STAGE 4: REPORT GENERATION - Starting")
+    logger.info("STAGE 4: ARTIFACT GENERATION - Starting (parallel)")
+    logger.info("  4A: HTML Report | 4B: Infographic | 4C: Audio Overview")
+    logger.info("=" * 60)
+    logger.info("STAGE 4A: REPORT GENERATION - Starting")
     logger.info("  Generating McKinsey/BCG style HTML executive report...")
-    logger.info("=" * 60)
 
     # Set current date for state injection in agent instruction
     callback_context.state["current_date"] = datetime.now().strftime("%Y-%m-%d")
@@ -129,15 +131,25 @@ def before_report_generator(callback_context: CallbackContext) -> Optional[types
 
 
 def before_infographic_generator(callback_context: CallbackContext) -> Optional[types.Content]:
-    """Log start of infographic generation phase."""
-    logger.info("=" * 60)
-    logger.info("STAGE 5: INFOGRAPHIC GENERATION - Starting")
+    """Log start of infographic generation phase (runs in parallel with report and audio)."""
+    logger.info("STAGE 4B: INFOGRAPHIC GENERATION - Starting")
     logger.info("  Calling Gemini image generation API...")
-    logger.info("=" * 60)
 
     # Set current date for state injection in agent instruction
     callback_context.state["current_date"] = datetime.now().strftime("%Y-%m-%d")
     callback_context.state["pipeline_stage"] = "infographic_generation"
+
+    return None
+
+
+def before_audio_overview(callback_context: CallbackContext) -> Optional[types.Content]:
+    """Log start of audio overview generation phase (runs in parallel with report and infographic)."""
+    logger.info("STAGE 4C: AUDIO OVERVIEW - Starting")
+    logger.info("  Calling Gemini multi-speaker TTS API...")
+
+    # Set current date for state injection in agent instruction
+    callback_context.state["current_date"] = datetime.now().strftime("%Y-%m-%d")
+    callback_context.state["pipeline_stage"] = "audio_overview_generation"
 
     return None
 
@@ -305,43 +317,71 @@ def after_strategy_advisor(callback_context: CallbackContext) -> Optional[types.
 
 
 def after_report_generator(callback_context: CallbackContext) -> Optional[types.Content]:
-    """Log completion of report generation.
+    """Log completion of report generation (runs in parallel).
 
-    Note: The artifact is now saved directly in the generate_html_report tool
+    Note: The artifact is saved directly in the generate_html_report tool
     using tool_context.save_artifact(). This callback just logs completion.
     """
-    # The report_generation_result from output_key contains the LLM's text response,
-    # not the tool's return dict. The artifact is saved directly in the tool.
-    logger.info("STAGE 4: COMPLETE - HTML report generation finished")
+    logger.info("STAGE 4A: COMPLETE - HTML report generation finished")
     logger.info("  (Artifact saved directly by generate_html_report tool)")
 
     stages = callback_context.state.get("stages_completed", [])
     stages.append("report_generation")
     callback_context.state["stages_completed"] = stages
 
+    _check_artifact_generation_complete(callback_context)
     return None
 
 
 def after_infographic_generator(callback_context: CallbackContext) -> Optional[types.Content]:
-    """Log completion of infographic generation.
+    """Log completion of infographic generation (runs in parallel).
 
-    Note: The artifact is now saved directly in the generate_infographic tool
+    Note: The artifact is saved directly in the generate_infographic tool
     using tool_context.save_artifact(). This callback just logs completion.
     """
-    # The infographic_result from output_key contains the LLM's text response,
-    # not the tool's return dict. The artifact is saved directly in the tool.
-    logger.info("STAGE 5: COMPLETE - Infographic generation finished")
+    logger.info("STAGE 4B: COMPLETE - Infographic generation finished")
     logger.info("  (Artifact saved directly by generate_infographic tool)")
 
     stages = callback_context.state.get("stages_completed", [])
     stages.append("infographic_generation")
     callback_context.state["stages_completed"] = stages
 
-    # Log final pipeline summary
-    logger.info("=" * 60)
-    logger.info("PIPELINE COMPLETE")
-    logger.info(f"  Stages completed: {stages}")
-    logger.info(f"  Total stages: {len(stages)}/7")
-    logger.info("=" * 60)
-
+    _check_artifact_generation_complete(callback_context)
     return None
+
+
+def after_audio_overview(callback_context: CallbackContext) -> Optional[types.Content]:
+    """Log completion of audio overview generation (runs in parallel).
+
+    Note: The artifact is saved directly in the generate_audio_overview tool
+    using tool_context.save_artifact(). This callback just logs completion.
+    """
+    logger.info("STAGE 4C: COMPLETE - Audio overview generation finished")
+    logger.info("  (Artifact saved directly by generate_audio_overview tool)")
+
+    stages = callback_context.state.get("stages_completed", [])
+    stages.append("audio_overview")
+    callback_context.state["stages_completed"] = stages
+
+    _check_artifact_generation_complete(callback_context)
+    return None
+
+
+def _check_artifact_generation_complete(callback_context: CallbackContext) -> None:
+    """Check if all artifact generation stages are complete and log pipeline summary.
+
+    Called after each parallel artifact generator completes. Only logs the final
+    summary when all 3 artifact stages (report, infographic, audio) are done.
+    """
+    stages = callback_context.state.get("stages_completed", [])
+    artifact_stages = {"report_generation", "infographic_generation", "audio_overview"}
+    completed_artifacts = artifact_stages.intersection(set(stages))
+
+    if len(completed_artifacts) == 3:
+        # All artifact stages complete - log pipeline summary
+        logger.info("=" * 60)
+        logger.info("PIPELINE COMPLETE")
+        logger.info(f"  Stages completed: {stages}")
+        logger.info(f"  Total stages: {len(stages)}")
+        logger.info("  Artifacts generated: HTML report, infographic, audio overview")
+        logger.info("=" * 60)

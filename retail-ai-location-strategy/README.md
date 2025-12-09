@@ -11,7 +11,7 @@ A multi-agent AI pipeline for retail site selection, built with [Google Agent De
   <tbody>
     <tr>
       <td>🔍</td>
-      <td><strong>Multi-Agent Pipeline:</strong> 7 specialized agents for market research, competitor mapping, gap analysis, strategy synthesis, and report generation.</td>
+      <td><strong>Multi-Agent Pipeline:</strong> 8 specialized agents for market research, competitor mapping, gap analysis, strategy synthesis, and parallel artifact generation (report, infographic, audio).</td>
     </tr>
     <tr>
       <td>🗺️</td>
@@ -23,7 +23,11 @@ A multi-agent AI pipeline for retail site selection, built with [Google Agent De
     </tr>
     <tr>
       <td>🎨</td>
-      <td><strong>AI-Generated Outputs:</strong> Executive HTML reports and infographics via Gemini's native image generation.</td>
+      <td><strong>AI-Generated Outputs:</strong> Executive HTML reports, infographics, and podcast-style audio summaries via Gemini's native image generation and TTS.</td>
+    </tr>
+    <tr>
+      <td>🎙️</td>
+      <td><strong>Audio Overview:</strong> NotebookLM-style podcast audio summaries using Gemini TTS (multi-speaker in AI Studio, single-speaker in Vertex AI).</td>
     </tr>
     <tr>
       <td>🖥️</td>
@@ -52,7 +56,7 @@ Given a location and business type, this pipeline automatically:
 - Maps competitors using Google Maps Places API
 - Calculates viability scores with Python code execution
 - Generates strategic recommendations with extended reasoning
-- Produces an HTML executive report and visual infographic
+- Produces an HTML executive report, visual infographic, and podcast-style audio overview
 
 ---
 
@@ -104,14 +108,16 @@ make install && make dev
 1. Open `http://localhost:8501` in your browser
 2. Select **"app"** from the agent dropdown
 3. Type a query like: *"I want to open a coffee shop in Indiranagar, Bangalore"*
-4. Watch the 7-stage pipeline execute:
+4. Watch the 6-stage pipeline execute:
    - **Intake** → Extract location and business type
    - **Market Research** → Web search for demographics and trends
    - **Competitor Mapping** → Google Maps Places API for competitors
    - **Gap Analysis** → Python code execution for viability scores
    - **Strategy Advisor** → Extended reasoning for recommendations
-   - **Report Generator** → HTML executive report
-   - **Infographic Generator** → Visual summary image
+   - **Artifact Generation** → Parallel generation of:
+     - HTML executive report
+     - Visual infographic
+     - Podcast-style audio overview (~2-3 min)
 
 <p align="center">
   <img src="assets/gifs/adk-web-demo.gif" alt="ADK Web Demo" width="700">
@@ -197,7 +203,7 @@ For production deployments with CI/CD, see the [Agent Starter Pack Development G
 | **Interaction Type** | Workflow |
 | **Complexity** | Advanced |
 | **Agent Type** | Multi Agent (Sequential Pipeline) |
-| **Components** | Multi-agent, Function calling, Web search, Google Maps API, Code execution, Image generation |
+| **Components** | Multi-agent, Function calling, Web search, Google Maps API, Code execution, Image generation, TTS audio |
 | **Vertical** | Retail / Real Estate |
 
 <p align="center">
@@ -208,11 +214,11 @@ For production deployments with CI/CD, see the [Agent Starter Pack Development G
 
 This agent supports multiple Gemini model families. Edit `app/config.py` to switch models based on your access and quota:
 
-| Model Option | Text Models | Image Model | Notes |
-|--------------|-------------|-------------|-------|
-| **Gemini 2.5 Pro** (default) | `gemini-2.5-pro` | `gemini-3-pro-image-preview` | **Recommended** - Stable, production-ready |
-| **Gemini 3 Pro Preview** | `gemini-3-pro-preview` | `gemini-3-pro-image-preview` | Recently launched - may throw 503 "model overloaded" errors |
-| **Gemini 2.5 Flash** | `gemini-2.5-flash` | `gemini-2.0-flash-exp` | Fastest, lowest cost |
+| Model Option | Text Models | Image Model | TTS Model | Notes |
+|--------------|-------------|-------------|-----------|-------|
+| **Gemini 2.5 Pro** (default) | `gemini-2.5-pro` | `gemini-3-pro-image-preview` | `gemini-2.5-flash-preview-tts` | **Recommended** - Stable, production-ready |
+| **Gemini 3 Pro Preview** | `gemini-3-pro-preview` | `gemini-3-pro-image-preview` | `gemini-2.5-flash-preview-tts` | Recently launched - may throw 503 "model overloaded" errors |
+| **Gemini 2.5 Flash** | `gemini-2.5-flash` | `gemini-2.0-flash-exp` | `gemini-2.5-flash-preview-tts` | Fastest, lowest cost |
 
 **Gemini 3 Documentation:**
 - [Vertex AI - Get started with Gemini 3](https://cloud.google.com/vertex-ai/generative-ai/docs/start/get-started-with-gemini-3)
@@ -242,7 +248,7 @@ IMAGE_MODEL = "gemini-3-pro-image-preview"
 
 Want a richer experience beyond the default ADK web UI? This agent includes an optional **[AG-UI Protocol](https://docs.ag-ui.com/)** frontend built with [CopilotKit](https://docs.copilotkit.ai/) that provides:
 
-- **Real-time Pipeline Timeline**: Watch the 7-stage analysis unfold with collapsible steps
+- **Real-time Pipeline Timeline**: Watch the 6-stage analysis unfold with collapsible steps
 - **Generative UI**: Rich visualizations appear in the chat as the agent works
 - **Interactive Dashboard**: Location scores, competitor stats, market characteristics
 - **Bidirectional State Sync**: Frontend and ADK agent share state in real-time
@@ -294,6 +300,21 @@ See [app/frontend/README.md](app/frontend/README.md) for detailed frontend docum
 
 ---
 
+## Audio Overview Feature
+
+The pipeline generates a podcast-style audio summary using Gemini TTS. The audio style differs based on authentication mode:
+
+| Mode | Audio Style | Voices | Script Type |
+|------|-------------|--------|-------------|
+| **AI Studio** | Two-host podcast dialogue | Kore (Host A) + Puck (Host B) | Conversational, NotebookLM-style |
+| **Vertex AI** | Single narrator | Kore | Professional narrative |
+
+The audio is saved as `audio_overview.wav` artifact (~2-3 minutes, ~5-8MB WAV file).
+
+**Note:** Multi-speaker TTS (`multi_speaker_voice_config`) is only supported in AI Studio mode. Vertex AI uses single-speaker fallback automatically.
+
+---
+
 ## Example Prompts
 
 | Region | Location | Business | Example Prompt |
@@ -317,7 +338,7 @@ See [app/frontend/README.md](app/frontend/README.md) for detailed frontend docum
   <img src="assets/images/pipeline-architecture.png" alt="Pipeline Architecture" width="700">
 </p>
 
-The pipeline is built as a `SequentialAgent` that orchestrates 7 specialized sub-agents, each handling a specific phase of the analysis.
+The pipeline is built as a `SequentialAgent` that orchestrates 6 stages, with the final stage using a `ParallelAgent` to generate artifacts (report, infographic, audio) concurrently.
 
 ### State Flow
 
@@ -341,23 +362,26 @@ retail-ai-location-strategy/
 │
 ├── app/                     # Main agent package (ADK discovers root_agent here)
 │   ├── __init__.py          # Exports root_agent for ADK CLI
-│   ├── agent.py             # SequentialAgent pipeline orchestrating 7 sub-agents
+│   ├── agent.py             # SequentialAgent pipeline orchestrating 6 stages (8 agents total)
 │   ├── config.py            # Model selection (Gemini 2.5/3) and retry settings
 │   ├── .env                 # API keys (create from .env.example)
 │   │
-│   ├── sub_agents/          # 7 specialized agents in execution order
+│   ├── sub_agents/          # Specialized agents in execution order
 │   │   ├── intake_agent/    # Stage 0: Parse user request → target_location, business_type
 │   │   ├── market_research/ # Stage 1: Google Search for demographics and trends
 │   │   ├── competitor_mapping/  # Stage 2A: Google Maps Places API for competitors
 │   │   ├── gap_analysis/    # Stage 2B: Python code execution for viability scores
 │   │   ├── strategy_advisor/    # Stage 3: Extended reasoning for recommendations
+│   │   ├── artifact_generation/ # Stage 4: ParallelAgent for artifact generation
 │   │   ├── report_generator/    # Stage 4A: HTML executive report generation
-│   │   └── infographic_generator/  # Stage 4B: Gemini image generation
+│   │   ├── infographic_generator/  # Stage 4B: Gemini image generation
+│   │   └── audio_overview/  # Stage 4C: Gemini TTS podcast-style audio
 │   │
 │   ├── tools/               # Custom function tools
 │   │   ├── places_search.py         # Google Maps Places API wrapper
 │   │   ├── html_report_generator.py # Builds styled HTML reports
-│   │   └── image_generator.py       # Gemini native image generation
+│   │   ├── image_generator.py       # Gemini native image generation
+│   │   └── audio_generator.py       # Gemini TTS audio generation
 │   │
 │   ├── schemas/             # Pydantic models for structured output
 │   │   └── report_schema.py # LocationIntelligenceReport schema

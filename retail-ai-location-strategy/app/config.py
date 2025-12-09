@@ -66,18 +66,21 @@ FAST_MODEL = "gemini-2.5-pro"
 PRO_MODEL = "gemini-2.5-pro"
 CODE_EXEC_MODEL = "gemini-2.5-pro"
 IMAGE_MODEL = "gemini-3-pro-image-preview"  # Gemini 3 for native image generation
+TTS_MODEL = "gemini-2.5-flash-preview-tts"  # Multi-speaker TTS for audio overview
 
 # Option 2: Gemini 3 Pro Preview (latest features, may have availability issues)
 # FAST_MODEL = "gemini-3-pro-preview"
 # PRO_MODEL = "gemini-3-pro-preview"
 # CODE_EXEC_MODEL = "gemini-3-pro-preview"
 # IMAGE_MODEL = "gemini-3-pro-image-preview"
+# TTS_MODEL = "gemini-2.5-flash-preview-tts"
 
 # Option 3: Gemini 2.5 Flash (fastest, lowest cost)
 # FAST_MODEL = "gemini-2.5-flash"
 # PRO_MODEL = "gemini-2.5-flash"
 # CODE_EXEC_MODEL = "gemini-2.5-flash"
 # IMAGE_MODEL = "gemini-2.0-flash-exp"
+# TTS_MODEL = "gemini-2.5-flash-preview-tts"
 
 # Retry Configuration (for handling model overload errors)
 # Note: HttpRetryOptions may only retry on certain HTTP codes (429, etc.)

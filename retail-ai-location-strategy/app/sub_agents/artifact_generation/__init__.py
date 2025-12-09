@@ -12,16 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Custom tools for the Location Strategy Pipeline."""
+"""Exports the artifact_generation_pipeline."""
 
-from .places_search import search_places
-from .image_generator import generate_infographic
-from .html_report_generator import generate_html_report
-from .audio_generator import generate_audio_overview
-
-__all__ = [
-    "search_places",
-    "generate_infographic",
-    "generate_html_report",
-    "generate_audio_overview",
-]
+from .agent import artifact_generation_pipeline

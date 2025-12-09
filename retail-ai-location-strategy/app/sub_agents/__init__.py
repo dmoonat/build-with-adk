@@ -20,8 +20,10 @@ This module exports all specialized agents that form the pipeline:
 2. CompetitorMappingAgent - Competitor mapping with Maps API
 3. GapAnalysisAgent - Quantitative analysis with code execution
 4. StrategyAdvisorAgent - Strategic synthesis with extended reasoning
-5. ReportGeneratorAgent - HTML report generation
-6. InfographicGeneratorAgent - Visual infographic generation
+5. ArtifactGenerationPipeline (ParallelAgent) - Generates outputs in parallel:
+   - 4A: ReportGeneratorAgent - HTML report generation
+   - 4B: InfographicGeneratorAgent - Visual infographic generation
+   - 4C: AudioOverviewAgent - Podcast-style audio summary
 """
 
 from .intake_agent import intake_agent
@@ -31,6 +33,8 @@ from .gap_analysis import gap_analysis_agent
 from .strategy_advisor import strategy_advisor_agent
 from .report_generator import report_generator_agent
 from .infographic_generator import infographic_generator_agent
+from .audio_overview import audio_overview_agent
+from .artifact_generation import artifact_generation_pipeline
 
 __all__ = [
     "intake_agent",
@@ -40,4 +44,6 @@ __all__ = [
     "strategy_advisor_agent",
     "report_generator_agent",
     "infographic_generator_agent",
+    "audio_overview_agent",
+    "artifact_generation_pipeline",
 ]
