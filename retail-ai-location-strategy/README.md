@@ -45,7 +45,7 @@ A multi-agent AI pipeline for retail site selection, built with [Google Agent De
 </table>
 
 <p align="center">
-  <img src="assets/images/main-intro-image.png" alt="Retail AI Location Strategy - System Architecture" width="800">
+  <img src="assets/images/main-intro-image.jpeg" alt="Retail AI Location Strategy - System Architecture" width="800">
 </p>
 
 ## What It Does
@@ -207,7 +207,7 @@ For production deployments with CI/CD, see the [Agent Starter Pack Development G
 | **Vertical** | Retail / Real Estate |
 
 <p align="center">
-  <img src="assets/images/agent-tools.png" alt="Agent Tools Integration" width="700">
+  <img src="assets/images/agent-tools.jpeg" alt="Agent Tools Integration" width="700">
 </p>
 
 ## Model Configuration
@@ -335,7 +335,7 @@ The audio is saved as `audio_overview.wav` artifact (~2-3 minutes, ~5-8MB WAV fi
 ## Architecture
 
 <p align="center">
-  <img src="assets/images/pipeline-architecture.png" alt="Pipeline Architecture" width="700">
+  <img src="assets/images/pipeline-architecture.jpeg" alt="Pipeline Architecture" width="700">
 </p>
 
 The pipeline is built as a `SequentialAgent` that orchestrates 6 stages, with the final stage using a `ParallelAgent` to generate artifacts (report, infographic, audio) concurrently.
@@ -345,7 +345,7 @@ The pipeline is built as a `SequentialAgent` that orchestrates 6 stages, with th
 Each agent reads from and writes to a shared session state, enabling seamless data flow between stages:
 
 <p align="center">
-  <img src="assets/images/data-flow.png" alt="Data Flow Between Agents" width="650">
+  <img src="assets/images/data-flow.jpeg" alt="Data Flow Between Agents" width="650">
 </p>
 
 ---
