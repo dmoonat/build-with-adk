@@ -41,6 +41,14 @@ A multi-agent AI pipeline for retail site selection, built with [Google Agent De
       <td>🧪</td>
       <td><strong>Tests & Evals:</strong> Unit tests, integration tests with <a href="https://google.github.io/adk-docs/">ADK Runner</a>, and evaluation datasets for measuring agent quality.</td>
     </tr>
+    <tr>
+      <td>📚</td>
+      <td><strong>Learn by Building:</strong> 9-part progressive <a href="blog/">tutorial series</a> where each part adds a new capability with working output.</td>
+    </tr>
+    <tr>
+      <td>🤖</td>
+      <td><strong>AI-Assisted Development:</strong> Context files for <a href=".ai/">Claude Code, Gemini CLI, Cursor, Copilot</a>, and other AI coding assistants.</td>
+    </tr>
   </tbody>
 </table>
 
@@ -57,6 +65,27 @@ Given a location and business type, this pipeline automatically:
 - Calculates viability scores with Python code execution
 - Generates strategic recommendations with extended reasoning
 - Produces an HTML executive report, visual infographic, and podcast-style audio overview
+
+---
+
+## Tutorial: Build This Agent Step-by-Step
+
+Want to understand how this agent works? The **[blog/](blog/)** directory contains a **9-part progressive tutorial** where each part adds a new capability:
+
+| Part | What You Build | Key Concepts |
+|------|----------------|--------------|
+| [Part 1](blog/01-setup-first-agent.md) | Setup + Root Agent | Project structure, `adk web` |
+| [Part 2](blog/02-intake-agent.md) | IntakeAgent | Request parsing, `AgentTool` |
+| [Part 3](blog/03-market-research.md) | MarketResearchAgent | `google_search`, state injection |
+| [Part 4](blog/04-competitor-mapping.md) | CompetitorMappingAgent | Custom tools, Google Maps API |
+| [Part 5](blog/05-code-execution.md) | GapAnalysisAgent | `BuiltInCodeExecutor`, pandas |
+| [Part 6](blog/06-strategy-synthesis.md) | StrategyAdvisorAgent | `ThinkingConfig`, Pydantic schemas |
+| [Part 7](blog/07-artifact-generation.md) | ArtifactGeneration | `ParallelAgent`, image/audio gen |
+| [Part 8](blog/08-testing.md) | Testing Infrastructure | Unit tests, integration, evalsets |
+| [Part 9](blog/09-production-deployment.md) | Production Deployment | Cloud Run, Agent Engine |
+| [Bonus](blog/bonus-ag-ui-frontend.md) | AG-UI Frontend | Interactive dashboard |
+
+Each part ends with working output you can run on `adk web`. Start with [Part 1](blog/01-setup-first-agent.md) or jump to any section.
 
 ---
 
@@ -360,6 +389,16 @@ retail-ai-location-strategy/
 ├── README.md                # This file
 ├── DEVELOPER_GUIDE.md       # Architecture deep-dive and implementation details
 │
+├── .ai/                     # AI coding assistant context files
+│   ├── CLAUDE.md            # Claude Code context
+│   ├── GEMINI.md            # Gemini CLI context
+│   ├── AGENTS.md            # Universal format (Copilot, Cursor, Codex)
+│   ├── llms.txt             # LLM-optimized summary
+│   ├── context/             # Shared context modules
+│   ├── .claude/commands/    # Claude Code slash commands
+│   ├── .cursor/rules/       # Cursor rules
+│   └── .github/             # GitHub Copilot instructions
+│
 ├── app/                     # Main agent package (ADK discovers root_agent here)
 │   ├── __init__.py          # Exports root_agent for ADK CLI
 │   ├── agent.py             # SequentialAgent pipeline orchestrating 6 stages (8 agents total)
@@ -404,15 +443,56 @@ retail-ai-location-strategy/
 │       ├── intake.evalset.json   # IntakeAgent parsing accuracy
 │       └── pipeline.evalset.json # Full pipeline quality measurement
 │
+├── blog/                    # 9-part progressive tutorial series
+│   ├── README.md            # Tutorial index and learning path
+│   ├── 01-setup-first-agent.md      # Part 1: Setup
+│   ├── 02-intake-agent.md           # Part 2: IntakeAgent
+│   ├── 03-market-research.md        # Part 3: MarketResearchAgent
+│   ├── 04-competitor-mapping.md     # Part 4: CompetitorMappingAgent
+│   ├── 05-code-execution.md         # Part 5: GapAnalysisAgent
+│   ├── 06-strategy-synthesis.md     # Part 6: StrategyAdvisorAgent
+│   ├── 07-artifact-generation.md    # Part 7: ArtifactGeneration
+│   ├── 08-testing.md                # Part 8: Testing
+│   ├── 09-production-deployment.md  # Part 9: Production
+│   └── bonus-ag-ui-frontend.md      # Bonus: AG-UI Frontend
+│
 └── notebook/                # Original prototype
     └── retail_ai_location_strategy_gemini_3.ipynb
 ```
 
 ---
 
+## AI Coding Assistant Context
+
+This project includes context files optimized for AI coding assistants to help you learn, debug, and extend the agent.
+
+| Your Tool | File | To Activate |
+|-----------|------|-------------|
+| **Claude Code** | `.ai/CLAUDE.md` | Copy to root as `CLAUDE.md` |
+| **Gemini CLI** | `.ai/GEMINI.md` | Copy to root as `GEMINI.md` |
+| **Cursor** | `.ai/.cursor/rules/` | Copy to root as `.cursor/` |
+| **GitHub Copilot** | `.ai/.github/` | Copy to root as `.github/` |
+| **OpenAI Codex / Jules** | `.ai/AGENTS.md` | Copy to root as `AGENTS.md` |
+| **Any LLM** | `.ai/llms.txt` | Use directly or copy |
+
+**Slash Commands** (Claude Code): Copy `.ai/.claude/` to root `.claude/` to enable `/add-agent`, `/add-tool`, `/run-tests`, `/explain-pipeline`
+
+See `.ai/README.md` for full documentation of available context files.
+
+---
+
 ## Learn More
 
-For detailed documentation, see **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)**:
+### Learning Paths
+
+| Goal | Resource |
+|------|----------|
+| **Build from scratch** | [Tutorial Series](blog/) - 9 parts, each adds a capability |
+| **Understand architecture** | [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) - Deep dive into design |
+| **Extend with AI assistance** | [.ai/](.ai/) - Context for Claude, Gemini CLI, Cursor |
+| **Learn ADK fundamentals** | [ADK Documentation](https://google.github.io/adk-docs/) |
+
+### Developer Guide Topics
 
 - [The Business Problem](DEVELOPER_GUIDE.md#the-business-problem) - Why this exists
 - [Architecture Deep Dive](DEVELOPER_GUIDE.md#architecture-deep-dive) - State flow and agent communication

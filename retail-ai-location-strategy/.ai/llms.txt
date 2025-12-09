@@ -1,0 +1,85 @@
+# Retail AI Location Strategy
+
+> Multi-agent AI pipeline for retail site selection using Google ADK
+
+## Quick Links
+
+- Tutorial: /blog/README.md
+- Architecture: /DEVELOPER_GUIDE.md
+- ADK Docs: https://google.github.io/adk-docs/
+
+## What This Agent Does
+
+Analyzes a target location for a business type and produces:
+1. Market research from live web search
+2. Competitor mapping from Google Maps
+3. Quantitative gap analysis with code execution
+4. Strategic recommendations
+5. HTML report, infographic image, and audio podcast
+
+## Agents (8 total)
+
+1. **IntakeAgent** - Parses user request → target_location, business_type
+2. **MarketResearchAgent** - Google Search → market_research_findings
+3. **CompetitorMappingAgent** - Google Maps API → competitor_analysis
+4. **GapAnalysisAgent** - Python code execution → gap_analysis
+5. **StrategyAdvisorAgent** - Extended reasoning → strategic_report
+6. **ReportGeneratorAgent** - Gemini → executive_report.html
+7. **InfographicGeneratorAgent** - Gemini image gen → infographic.png
+8. **AudioOverviewAgent** - Gemini TTS → audio_overview.wav
+
+## Key Files
+
+- `app/agent.py` - Pipeline definition
+- `app/sub_agents/` - Individual agents
+- `app/tools/` - Custom tools
+- `app/callbacks/` - Lifecycle hooks
+- `app/config.py` - Model configuration
+
+## Tools
+
+- `google_search` - Built-in ADK tool for web search
+- `search_places` - Custom tool for Google Maps Places API
+- `generate_html_report` - Generates McKinsey-style HTML report
+- `generate_infographic` - Generates image using Gemini
+- `generate_audio_overview` - Generates TTS podcast audio
+
+## State Keys
+
+- `target_location` - Geographic area (e.g., "Indiranagar, Bangalore")
+- `business_type` - Type of business (e.g., "coffee shop")
+- `market_research_findings` - Demographics, trends
+- `competitor_analysis` - Real competitor data
+- `gap_analysis` - Viability scores
+- `strategic_report` - Pydantic JSON with recommendations
+
+## Commands
+
+```
+make install    # Install dependencies
+make dev        # Run at localhost:8501
+make test-unit  # Unit tests
+make test-agents # Integration tests
+```
+
+## Environment Variables
+
+```
+GOOGLE_API_KEY=...           # AI Studio API key
+GOOGLE_GENAI_USE_VERTEXAI=FALSE
+MAPS_API_KEY=...             # Google Maps API key
+```
+
+## ADK Patterns Used
+
+- SequentialAgent - Pipeline orchestration
+- ParallelAgent - Concurrent artifact generation
+- LlmAgent - Core agent type
+- AgentTool - Wrap agent as tool
+- BuiltInCodeExecutor - Sandboxed Python
+
+## Learning Path
+
+1. Read blog/01-setup-first-agent.md
+2. Continue through blog/09-production-deployment.md
+3. Reference DEVELOPER_GUIDE.md for deep dives

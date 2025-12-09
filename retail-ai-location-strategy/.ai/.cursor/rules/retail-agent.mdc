@@ -1,0 +1,86 @@
+---
+description: Rules for Retail AI Location Strategy Agent built with Google ADK
+globs:
+  - "app/**/*.py"
+  - "tests/**/*.py"
+---
+
+# Retail AI Location Strategy Agent
+
+Multi-agent pipeline for retail site selection using Google ADK.
+
+## Architecture
+
+8-agent pipeline: IntakeAgent → MarketResearch → CompetitorMapping → GapAnalysis → StrategyAdvisor → ParallelAgent(Report, Infographic, Audio)
+
+## Key Files
+
+- `app/agent.py` - Root agent and pipeline
+- `app/sub_agents/*/agent.py` - Individual agents
+- `app/tools/*.py` - Custom tools
+- `app/callbacks/pipeline_callbacks.py` - Lifecycle hooks
+
+## Commands
+
+```bash
+make install        # Install dependencies
+make dev            # Run at localhost:8501
+make test-unit      # Unit tests
+make test-agents    # Integration tests
+```
+
+## Patterns
+
+### Creating Agents
+```python
+from google.adk.agents import LlmAgent
+agent = LlmAgent(
+    name="MyAgent",
+    model=FAST_MODEL,
+    instruction="...",
+    tools=[my_tool],
+    output_key="my_output",
+)
+```
+
+### Creating Tools
+```python
+from google.adk.tools import ToolContext
+def my_tool(query: str, tool_context: ToolContext) -> dict:
+    return {"status": "success", "data": result}
+```
+
+### Creating Callbacks
+```python
+def before_agent(callback_context: CallbackContext):
+    callback_context.state["key"] = "value"
+    return None
+```
+
+## State Keys
+
+- `target_location`, `business_type` - From IntakeAgent
+- `market_research_findings` - From MarketResearchAgent
+- `competitor_analysis` - From CompetitorMappingAgent
+- `gap_analysis` - From GapAnalysisAgent
+- `strategic_report` - From StrategyAdvisorAgent
+
+## Style
+
+- Type hints on all parameters
+- Tools return dict with "status" key
+- Callbacks return None or Content
+- snake_case for state keys
+- Async for artifact-saving tools
+
+## Testing
+
+- `tests/unit/` - Schema tests, no API
+- `tests/integration/` - Real API calls
+- Run `make test-unit` before committing
+
+## Gotchas
+
+- `.env` goes in `app/` folder
+- `output_schema` disables tool calling
+- Multi-speaker TTS only in AI Studio mode

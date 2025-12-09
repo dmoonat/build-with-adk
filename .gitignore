@@ -7,6 +7,11 @@
 .adk/
 .claude/
 
+# Allow project-specific AI context folder (including nested .claude/, .cursor/, .github/)
+!retail-ai-location-strategy/.ai/
+!retail-ai-location-strategy/.ai/.claude/
+!retail-ai-location-strategy/.ai/.claude/**
+
 # Docs folder
 retail-ai-location-strategy/.docs/
 
