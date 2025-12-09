@@ -1,0 +1,36 @@
+{
+  "eval_set_id": "pipeline_eval_set",
+  "name": "Full Pipeline Evaluation Set",
+  "description": "End-to-end tests for the complete location strategy pipeline including market research, competitor mapping, and analysis",
+  "eval_cases": [
+    {
+      "eval_id": "full_pipeline_bangalore_coffee",
+      "conversation": [
+        {
+          "invocation_id": "inv-pipeline-001",
+          "user_content": {
+            "parts": [{"text": "I want to open a coffee shop in Indiranagar, Bangalore"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Based on my comprehensive analysis of Indiranagar, Bangalore for your coffee shop"}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {"name": "IntakeAgent", "args": {}},
+              {"name": "google_search", "args": {}},
+              {"name": "search_places", "args": {}}
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "retail_location_strategy",
+        "user_id": "test_user",
+        "state": {}
+      }
+    }
+  ]
+}

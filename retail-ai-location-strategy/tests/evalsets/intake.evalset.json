@@ -1,0 +1,132 @@
+{
+  "eval_set_id": "intake_agent_eval_set",
+  "name": "IntakeAgent Evaluation Set",
+  "description": "Tests the IntakeAgent's ability to parse user requests and extract target_location and business_type",
+  "eval_cases": [
+    {
+      "eval_id": "coffee_shop_bangalore",
+      "conversation": [
+        {
+          "invocation_id": "inv-001",
+          "user_content": {
+            "parts": [{"text": "I want to open a coffee shop in Indiranagar, Bangalore"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I've identified your request: You want to open a coffee shop in Indiranagar, Bangalore."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "retail_location_strategy",
+        "user_id": "test_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "fitness_austin",
+      "conversation": [
+        {
+          "invocation_id": "inv-002",
+          "user_content": {
+            "parts": [{"text": "Where should I open a fitness studio in Austin, Texas?"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I've identified your request: You want to open a fitness studio in Austin, Texas."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "retail_location_strategy",
+        "user_id": "test_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "bakery_dubai",
+      "conversation": [
+        {
+          "invocation_id": "inv-003",
+          "user_content": {
+            "parts": [{"text": "I'm planning to open a bakery in Dubai Marina"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I've identified your request: You want to open a bakery in Dubai Marina."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "retail_location_strategy",
+        "user_id": "test_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "bookstore_london",
+      "conversation": [
+        {
+          "invocation_id": "inv-004",
+          "user_content": {
+            "parts": [{"text": "Help me find the best location for a bookstore cafe in Shoreditch, London"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I've identified your request: You want to open a bookstore cafe in Shoreditch, London."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "retail_location_strategy",
+        "user_id": "test_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "ramen_tokyo",
+      "conversation": [
+        {
+          "invocation_id": "inv-005",
+          "user_content": {
+            "parts": [{"text": "Analyze Shibuya, Tokyo for opening a ramen restaurant"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I've identified your request: You want to open a ramen restaurant in Shibuya, Tokyo."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "retail_location_strategy",
+        "user_id": "test_user",
+        "state": {}
+      }
+    }
+  ]
+}

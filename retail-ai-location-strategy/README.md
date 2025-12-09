@@ -398,6 +398,28 @@ If you encounter issues while setting up or running this agent, here are some re
 
 ---
 
+## Testing
+
+This project includes both **tests** (verify correctness) and **evaluations** (measure quality).
+
+```bash
+# Quick validation - test IntakeAgent parsing (~30 seconds)
+make test-intake
+
+# Test all individual agents (~2-5 minutes)
+make test-agents
+
+# Run unit tests only - no API calls (~2 seconds)
+make test-unit
+
+# Run ADK evaluations - measure response quality
+make eval
+```
+
+For comprehensive testing documentation including how to add new tests, evaluation metrics, and production CI/CD guidance, see **[tests/README.md](tests/README.md)**.
+
+---
+
 ## Authors
 
 Created by [Lavi Nigam](https://github.com/lavinigam-gcp) and [Deepak Moonat](https://github.com/dmoonat).

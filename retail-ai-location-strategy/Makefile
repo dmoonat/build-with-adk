@@ -1,7 +1,7 @@
 # Makefile for Retail AI Location Strategy Agent
 # Compatible with agent-starter-pack deployment
 
-.PHONY: install dev playground ag-ui ag-ui-install lint test clean help
+.PHONY: install dev playground ag-ui ag-ui-install lint test test-unit test-integration eval eval-intake clean help
 
 # ============================================================================
 # LOCAL DEVELOPMENT
@@ -59,13 +59,56 @@ lint:
 	uv run mypy .
 
 # ============================================================================
-# TESTING & UTILITIES
+# TESTING & EVALUATION
 # ============================================================================
 
-## Run tests
+## Run all tests (unit + integration)
 test:
 	uv sync --dev
-	uv run pytest tests/
+	uv run pytest tests/ -v
+
+## Run only unit tests (fast, no API calls)
+test-unit:
+	uv sync --dev
+	uv run pytest tests/unit -v
+
+## Run integration tests for individual agents (2-5 minutes)
+test-agents:
+	uv sync --dev
+	uv run pytest tests/integration/test_agents.py -v -s --timeout=180 -m "integration"
+
+## Run just IntakeAgent test (quickest validation - 10-30 seconds)
+test-intake:
+	uv sync --dev
+	uv run pytest tests/integration/test_agents.py::TestIntakeAgent -v -s --timeout=60
+
+## Run full integration tests (requires API keys, runs full pipeline - takes 15-30 mins)
+test-integration:
+	uv sync --dev
+	uv run pytest tests/integration -v --timeout=1800 -m "integration" -s
+
+## Run ADK evaluation via CLI (all evalsets)
+eval:
+	uv sync --dev
+	@echo "Running intake evalset..."
+	uv run adk eval app tests/evalsets/intake.evalset.json
+	@echo ""
+	@echo "Running pipeline evalset..."
+	uv run adk eval app tests/evalsets/pipeline.evalset.json
+
+## Run ADK evaluation for intake agent only (quick)
+eval-intake:
+	uv sync --dev
+	uv run adk eval app tests/evalsets/intake.evalset.json
+
+## Run ADK evaluation for full pipeline
+eval-pipeline:
+	uv sync --dev
+	uv run adk eval app tests/evalsets/pipeline.evalset.json
+
+# ============================================================================
+# UTILITIES
+# ============================================================================
 
 ## Clean build artifacts
 clean:
@@ -89,8 +132,16 @@ help:
 	@echo "CODE QUALITY:"
 	@echo "  make lint        - Run linters (ruff, mypy, codespell)"
 	@echo ""
-	@echo "TESTING & UTILITIES:"
-	@echo "  make test        - Run tests"
+	@echo "TESTING & EVALUATION:"
+	@echo "  make test            - Run all tests (unit + integration)"
+	@echo "  make test-unit       - Run unit tests only (fast, no API calls)"
+	@echo "  make test-intake     - Quick test - just IntakeAgent (10-30 seconds)"
+	@echo "  make test-agents     - Test all individual agents (2-5 minutes)"
+	@echo "  make test-integration - Run full pipeline tests (15-30 minutes)"
+	@echo "  make eval            - Run ADK evaluation via CLI"
+	@echo "  make eval-intake     - Run ADK evaluation for intake agent only"
+	@echo ""
+	@echo "UTILITIES:"
 	@echo "  make clean       - Clean build artifacts"
 	@echo ""
 	@echo "DEPLOYMENT:"
