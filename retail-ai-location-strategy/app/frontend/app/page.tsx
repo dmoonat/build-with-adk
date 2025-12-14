@@ -9,6 +9,7 @@ import { MarketCard } from "@/components/MarketCard";
 import { AlternativeLocations } from "@/components/AlternativeLocations";
 import { ArtifactViewer } from "@/components/ArtifactViewer";
 import type { AgentState } from "@/lib/types";
+import { TIMELINE_STEPS } from "@/lib/constants";
 
 export default function Home() {
   // Connect to agent state - this receives STATE_SNAPSHOT and STATE_DELTA events
@@ -50,6 +51,7 @@ export default function Home() {
         strategy_synthesis: "Synthesizing strategy...",
         report_generation: "Generating executive report...",
         infographic_generation: "Creating infographic...",
+        audio_overview_generation: "Generating audio overview...",
       };
 
       const currentLabel = stageLabels[state.pipeline_stage] || `Processing ${state.pipeline_stage}...`;
@@ -63,7 +65,7 @@ export default function Home() {
               <span className="text-gray-700 text-sm">{currentLabel}</span>
             </div>
             <span className="text-xs text-gray-500">
-              {completedCount}/8 complete
+              {completedCount}/{TIMELINE_STEPS.length} complete
             </span>
           </div>
         </div>

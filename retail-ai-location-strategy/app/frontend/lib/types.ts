@@ -116,7 +116,8 @@ export type PipelineStage =
   | "gap_analysis"
   | "strategy_synthesis"
   | "report_generation"
-  | "infographic_generation";
+  | "infographic_generation"
+  | "audio_overview_generation";
 
 /**
  * Complete agent state type for useCoAgent hook.
