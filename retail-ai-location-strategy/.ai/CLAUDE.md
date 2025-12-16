@@ -97,9 +97,21 @@ Defined in `app/config.py`:
 - **Dev Guide**: `DEVELOPER_GUIDE.md` - Deep architecture docs
 - **ADK Docs**: https://google.github.io/adk-docs/
 
-## Slash Commands
+## Skills (Auto-loaded)
 
-Slash commands are available in `.ai/.claude/commands/`:
+Skills in `.ai/.claude/skills/` are automatically loaded when relevant:
+
+| Skill | Triggers When You Ask About |
+|-------|----------------------------|
+| `adk-agent-builder` | Adding agents, creating agents |
+| `adk-tool-builder` | Adding tools, custom functions |
+| `adk-debugger` | Errors, debugging, troubleshooting |
+| `retail-agent-learner` | How it works, architecture, ADK concepts |
+| `retail-agent-customizer` | Customizing, adapting, different use cases |
+
+## Slash Commands (User-invoked)
+
+Slash commands in `.ai/.claude/commands/`:
 - `/add-agent` - Guide for adding a new agent
 - `/add-tool` - Guide for adding a new tool
 - `/run-tests` - Run test commands

@@ -69,7 +69,21 @@ make dev
 make test-unit
 ```
 
-## Claude Code Slash Commands
+## Claude Code Skills (Model-Invoked)
+
+The `.claude/skills/` folder contains skills that Claude automatically loads when relevant:
+
+| Skill | Purpose | Auto-triggers When |
+|-------|---------|-------------------|
+| `adk-agent-builder` | Add new agents | "add agent", "create agent" |
+| `adk-tool-builder` | Create custom tools | "add tool", "new tool" |
+| `adk-debugger` | Troubleshoot errors | "error", "not working", "debug" |
+| `retail-agent-learner` | Learn ADK concepts | "explain", "how does", "architecture" |
+| `retail-agent-customizer` | Customize for use cases | "customize", "adapt", "modify for" |
+
+**Skills vs Commands**: Skills are model-invoked (Claude loads them automatically based on context). Commands are user-invoked (you type `/command`).
+
+## Claude Code Slash Commands (User-Invoked)
 
 The `.claude/commands/` folder contains slash commands for Claude Code:
 

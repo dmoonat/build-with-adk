@@ -203,6 +203,8 @@ cd my-retail-agent && make deploy IAP=true
 See the [Agent Starter Pack Documentation](https://googlecloudplatform.github.io/agent-starter-pack/) for full deployment options.
 </details>
 
+---
+
 ## Cloud Deployment
 
 > **Note:** For production cloud deployment, use the [Agent Starter Pack](https://goo.gle/agent-starter-pack) to generate a deployment-ready project with CI/CD pipelines.
@@ -346,18 +348,13 @@ The audio is saved as `audio_overview.wav` artifact (~2-3 minutes, ~5-8MB WAV fi
 
 ## Example Prompts
 
-| Region | Location | Business | Example Prompt |
-|--------|----------|----------|----------------|
-| Asia | Bangalore, India | Coffee Shop | "I want to open a coffee shop in Indiranagar, Bangalore" |
-| Asia | Tokyo, Japan | Ramen Restaurant | "Analyze Shibuya, Tokyo for opening a ramen restaurant" |
-| Asia | Singapore | Bubble Tea | "Where should I open a bubble tea shop in Orchard Road, Singapore?" |
-| Americas | Austin, Texas | Fitness Studio | "Where should I open a fitness studio in Austin, Texas?" |
-| Americas | Mexico City | Taco Restaurant | "Analyze Roma Norte, Mexico City for a taco restaurant" |
-| Americas | Toronto, Canada | Craft Brewery | "Help me find a location for a craft brewery in Toronto's Distillery District" |
-| Europe | London, UK | Bookstore Cafe | "Help me find the best location for a bookstore cafe in Shoreditch, London" |
-| Europe | Berlin, Germany | Vegan Restaurant | "Analyze Berlin's Kreuzberg for opening a vegan restaurant" |
-| Middle East | Dubai, UAE | Bakery | "I'm planning to open a bakery in Dubai Marina" |
-| Oceania | Sydney, Australia | Juice Bar | "Analyze the market for a juice bar in Bondi Beach, Sydney" |
+| Region | Business | Example Prompt |
+|--------|----------|----------------|
+| Asia | Coffee Shop | "I want to open a coffee shop in Indiranagar, Bangalore" |
+| Americas | Fitness Studio | "Where should I open a fitness studio in Austin, Texas?" |
+| Europe | Bookstore Cafe | "Help me find the best location for a bookstore cafe in Shoreditch, London" |
+| Middle East | Bakery | "I'm planning to open a bakery in Dubai Marina" |
+| Oceania | Juice Bar | "Analyze the market for a juice bar in Bondi Beach, Sydney" |
 
 ---
 
@@ -379,6 +376,56 @@ Each agent reads from and writes to a shared session state, enabling seamless da
 
 ---
 
+## AI Coding Assistant Context
+
+This project includes context files optimized for AI coding assistants in the `.ai/` folder.
+
+| Your Tool | File | Activation |
+|-----------|------|------------|
+| **Claude Code** | `.ai/CLAUDE.md` | Copy to root as `CLAUDE.md` |
+| **Gemini CLI** | `.ai/GEMINI.md` | Copy to root as `GEMINI.md` |
+| **Cursor** | `.ai/.cursor/` | Copy to root as `.cursor/` |
+| **Copilot / Codex** | `.ai/AGENTS.md` | Copy to root as `AGENTS.md` |
+
+**Claude Code Skills**: Copy `.ai/.claude/` to root `.claude/` for auto-loaded skills (agent-builder, tool-builder, debugger, learner, customizer) and slash commands (`/add-agent`, `/add-tool`, `/run-tests`).
+
+See [.ai/README.md](.ai/README.md) for full documentation.
+
+---
+
+## Learn More
+
+| Goal | Resource |
+|------|----------|
+| **Build from scratch** | [Tutorial Series](blog/) - 9 parts, each adds a capability |
+| **Understand architecture** | [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) - Deep dive into design and troubleshooting |
+| **Extend with AI assistance** | [.ai/](.ai/) - Context for Claude, Gemini CLI, Cursor |
+| **Learn ADK fundamentals** | [ADK Documentation](https://google.github.io/adk-docs/) |
+
+---
+
+## Testing
+
+This project includes both **tests** (verify correctness) and **evaluations** (measure quality).
+
+```bash
+# Quick validation - test IntakeAgent parsing (~30 seconds)
+make test-intake
+
+# Test all individual agents (~2-5 minutes)
+make test-agents
+
+# Run unit tests only - no API calls (~2 seconds)
+make test-unit
+
+# Run ADK evaluations - measure response quality
+make eval
+```
+
+For comprehensive testing documentation including how to add new tests, evaluation metrics, and production CI/CD guidance, see **[tests/README.md](tests/README.md)**.
+
+---
+
 ## Project Structure
 
 ```
@@ -396,6 +443,7 @@ retail-ai-location-strategy/
 │   ├── llms.txt             # LLM-optimized summary
 │   ├── context/             # Shared context modules
 │   ├── .claude/commands/    # Claude Code slash commands
+│   ├── .claude/skills/      # Claude Code auto-loaded skills
 │   ├── .cursor/rules/       # Cursor rules
 │   └── .github/             # GitHub Copilot instructions
 │
@@ -459,75 +507,6 @@ retail-ai-location-strategy/
 └── notebook/                # Original prototype
     └── retail_ai_location_strategy_gemini_3.ipynb
 ```
-
----
-
-## AI Coding Assistant Context
-
-This project includes context files optimized for AI coding assistants to help you learn, debug, and extend the agent.
-
-| Your Tool | File | To Activate |
-|-----------|------|-------------|
-| **Claude Code** | `.ai/CLAUDE.md` | Copy to root as `CLAUDE.md` |
-| **Gemini CLI** | `.ai/GEMINI.md` | Copy to root as `GEMINI.md` |
-| **Cursor** | `.ai/.cursor/rules/` | Copy to root as `.cursor/` |
-| **GitHub Copilot** | `.ai/.github/` | Copy to root as `.github/` |
-| **OpenAI Codex / Jules** | `.ai/AGENTS.md` | Copy to root as `AGENTS.md` |
-| **Any LLM** | `.ai/llms.txt` | Use directly or copy |
-
-**Slash Commands** (Claude Code): Copy `.ai/.claude/` to root `.claude/` to enable `/add-agent`, `/add-tool`, `/run-tests`, `/explain-pipeline`
-
-See `.ai/README.md` for full documentation of available context files.
-
----
-
-## Learn More
-
-### Learning Paths
-
-| Goal | Resource |
-|------|----------|
-| **Build from scratch** | [Tutorial Series](blog/) - 9 parts, each adds a capability |
-| **Understand architecture** | [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) - Deep dive into design |
-| **Extend with AI assistance** | [.ai/](.ai/) - Context for Claude, Gemini CLI, Cursor |
-| **Learn ADK fundamentals** | [ADK Documentation](https://google.github.io/adk-docs/) |
-
-### Developer Guide Topics
-
-- [The Business Problem](DEVELOPER_GUIDE.md#the-business-problem) - Why this exists
-- [Architecture Deep Dive](DEVELOPER_GUIDE.md#architecture-deep-dive) - State flow and agent communication
-- [Agents and Tools](DEVELOPER_GUIDE.md#agents-and-tools) - Sub-agents, tools, callbacks, schemas
-- [Configuration](DEVELOPER_GUIDE.md#configuration) - Model selection and retry options
-- [Troubleshooting](DEVELOPER_GUIDE.md#troubleshooting) - Common issues and fixes
-
-## Troubleshooting
-
-If you encounter issues while setting up or running this agent, here are some resources to help you troubleshoot:
-- [ADK Documentation](https://google.github.io/adk-docs/): Comprehensive documentation for the Agent Development Kit
-- [Vertex AI Authentication Guide](https://cloud.google.com/vertex-ai/docs/authentication): Detailed instructions for setting up authentication
-- [Agent Starter Pack Troubleshooting](https://googlecloudplatform.github.io/agent-starter-pack/guide/troubleshooting.html): Common issues
-
----
-
-## Testing
-
-This project includes both **tests** (verify correctness) and **evaluations** (measure quality).
-
-```bash
-# Quick validation - test IntakeAgent parsing (~30 seconds)
-make test-intake
-
-# Test all individual agents (~2-5 minutes)
-make test-agents
-
-# Run unit tests only - no API calls (~2 seconds)
-make test-unit
-
-# Run ADK evaluations - measure response quality
-make eval
-```
-
-For comprehensive testing documentation including how to add new tests, evaluation metrics, and production CI/CD guidance, see **[tests/README.md](tests/README.md)**.
 
 ---
 
